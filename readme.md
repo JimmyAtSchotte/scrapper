@@ -1,5 +1,3 @@
-Your documentation is clear and provides the necessary instructions for running the scraper application. Here are a few suggestions for improvement in terms of formatting, clarity, and completeness:
-
 # Scraper
 
 Scrapes a website by crawling through internal links and stores the website locally on disk.
