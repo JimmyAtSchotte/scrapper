@@ -5,12 +5,12 @@ namespace ScrapperApp.Crawler;
 public class CrawlingQueue
 {
     private readonly Queue<RelativeUriPath> _queue;
-    private readonly HashSet<string> _memory;
+    private readonly HashSet<int> _memory;
     
     public CrawlingQueue()
     {
         _queue = new Queue<RelativeUriPath>();
-        _memory = new HashSet<string>();
+        _memory = new HashSet<int>();
     }
 
     public bool HasQueue => _queue.Any();
@@ -24,11 +24,13 @@ public class CrawlingQueue
     
     public void Enqueue(RelativeUriPath path)
     {
-        if(_memory.Contains(path.ToString()))
+        var hashCode = path.GetHashCode();
+        
+        if(_memory.Contains(hashCode))
             return;
         
         _queue.Enqueue(path);
-        _memory.Add(path.ToString());
+        _memory.Add(hashCode);
     }
 
     public IEnumerable<RelativeUriPath> GetBatch(int batchSize)
@@ -41,4 +43,5 @@ public class CrawlingQueue
             yield return _queue.Dequeue();  
         }
     }
+    
 }

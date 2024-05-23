@@ -35,13 +35,14 @@ public class HtmlWebEntityTests
     [Test]
     public void HasRelativeHrefLink()
     {
-        var uri = new Uri("https://localhost/pages/page1");
+        var baseAddress = new Uri("https://localhost/");
+        var uri = new Uri(baseAddress, "pages/page1");
         var content = "<html><body><a href=\"../pages/page2\"</body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
         var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var links = htmlPage.GetLinkedFiles();
 
-        links.FirstOrDefault().ToString().Should().Be("pages/page2");
+        links.FirstOrDefault().CreateRelativeUri(baseAddress).PathAndQuery.Should().Be("/pages/page2");
     }
     
     [Test]

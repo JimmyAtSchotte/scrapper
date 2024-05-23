@@ -16,17 +16,7 @@ public class RelativeUriPath
     
     public Uri CreateRelativeUri(Uri? baseAddress)
     {
-        return new Uri(baseAddress, ToString());
-    }
-
-    public override string ToString()
-    {
-        var path = _path;
-        
-        path = DefaultDocumentToFolderPath(path);
-        path = RemoveTrailingSlash(path);
-        
-        return path;
+        return new Uri(baseAddress, _path);
     }
     
     private static string DefaultDocumentToFolderPath(string path)
@@ -36,6 +26,13 @@ public class RelativeUriPath
                 return path[..^defaultDocument.Length];
         
         return path;
+    }
+
+    public override int GetHashCode()
+    {
+        var pathIdentifier = DefaultDocumentToFolderPath(_path);
+
+        return RemoveTrailingSlash(pathIdentifier).GetHashCode();
     }
     
     private static string RemoveTrailingSlash(string path)

@@ -1,3 +1,5 @@
+using System.Net;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using ScrapperApp.SharedKernel;
 
@@ -22,19 +24,20 @@ public class WebScraper : IWebScraper
         
             _logger.LogTrace("Begin request {Uri}", uri);
         
-            var response = await _httpClient.GetAsync(uri.AbsolutePath);
+            var response = await _httpClient.GetAsync(uri);
             _logger.LogTrace("Complete request {Uri}, status: {HttpStatus}", uri, response.StatusCode);
-
-            response.EnsureSuccessStatusCode();
-            
+           
             var content = await response.Content.ReadAsByteArrayAsync();
-            
-            return response.Content.Headers.ContentType?.MediaType switch
-            {
-                "text/html" => Maybe<IWebEntity>.WithValue(HtmlWebEntity.Create(content, uri)),
-                "text/css" => Maybe<IWebEntity>.WithValue(CssWebEntity.Create(content, uri)),
-                _ => Maybe<IWebEntity>.WithValue(FileWebEntity.Create(content, uri))
-            };
+           
+            if(response.IsSuccessStatusCode)
+                return response.Content.Headers.ContentType?.MediaType switch
+                {
+                    "text/html" => Maybe<IWebEntity>.WithValue(HtmlWebEntity.Create(content, uri)),
+                    "text/css" => Maybe<IWebEntity>.WithValue(CssWebEntity.Create(content, uri)),
+                    _ => Maybe<IWebEntity>.WithValue(FileWebEntity.Create(content, uri))
+                };
+
+            throw new WebScraperException(uri, response.StatusCode, Encoding.UTF8.GetString(content));
         }
         catch (Exception e)
         {
@@ -42,5 +45,14 @@ public class WebScraper : IWebScraper
         }
         
         return Maybe<IWebEntity>.WithoutValue();
+    }
+}
+
+public class WebScraperException : Exception
+{
+    public WebScraperException(Uri uri, HttpStatusCode code, string content) : base(
+    $"[{code}] {uri.AbsoluteUri} ({content})")
+    {
+        
     }
 }

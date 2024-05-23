@@ -37,11 +37,12 @@ public class WebScraperTests
     public async Task ScrapHrefLink()
     {
         var indexHtml = "<html><body><a href=\"pageA.html\">LINK</a></body></html>";
+        var baseAddress = new Uri("http://localhost/");
         
         var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
-            dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
-                HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
+                HttpClientConfig.Create(baseAddress, response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
             );
         });
 
@@ -49,18 +50,19 @@ public class WebScraperTests
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
-        webEntity.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA.html");
+        webEntity.GetLinkedFiles().Should().Contain(x => x.CreateRelativeUri(baseAddress).PathAndQuery == "/pageA.html");
     }
     
     [Test]
     public async Task ScrapSubFolderHrefLink()
     {
         var indexHtml = "<html><body><a href=\"pageA\">LINK</a></body></html>";
+        var baseAddress = new Uri("http://localhost/");
         
         var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
-            dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
-            HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
+            HttpClientConfig.Create(baseAddress, response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
             );
         });
 
@@ -68,18 +70,19 @@ public class WebScraperTests
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
         
         scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
-        webEntity.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA");
+        webEntity.GetLinkedFiles().Should().Contain(x => x.CreateRelativeUri(baseAddress).PathAndQuery == "/pageA");
     }
     
     [Test]
     public async Task RelativeUrls()
     {
         var pageAHtml = "<html><body><a href=\"../\">LINK</a></body></html>";
+        var baseAddress = new Uri("http://localhost/");
         
         var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
-            dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
-            HttpClientConfig.Create(new Uri("http://localhost/pageA"), response => response.Content = new StringContent(pageAHtml, Encoding.UTF8, "text/html"))
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = baseAddress, 
+            HttpClientConfig.Create(new Uri(baseAddress, "pageA"), response => response.Content = new StringContent(pageAHtml, Encoding.UTF8, "text/html"))
             );
         });
 
@@ -87,7 +90,7 @@ public class WebScraperTests
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath("pageA"));
 
         scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
-        webEntity.GetLinkedFiles().Should().Contain(x => x.ToString() =="");
+        webEntity.GetLinkedFiles().Should().Contain(x => x.CreateRelativeUri(baseAddress).PathAndQuery == "/");
     }
     
     [Test]
@@ -177,18 +180,6 @@ public class WebScraperTests
     [Test]
     public async Task ErrorHttpStatusCode()
     {
-        var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-        httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-            "SendAsync",
-            ItExpr.IsAny<HttpRequestMessage>(),
-            ItExpr.IsAny<CancellationToken>()
-            )
-            .ThrowsAsync(new HttpRequestException("Connection failure"));
-        
-        var httpClient = new HttpClient(httpMessageHandlerMock.Object);
-        httpClient.BaseAddress = new Uri("http://localhost/");
-        
         var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
