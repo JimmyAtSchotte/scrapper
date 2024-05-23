@@ -2,11 +2,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ScrapperApp;
 
-public interface IWebSiteCrawler
-{
-    Task StartCrawling();
-}
-
 public class WebSiteCrawler : IWebSiteCrawler
 {
     private const string DEFAULT_DOCUMENT = "";
@@ -49,9 +44,4 @@ public class WebSiteCrawler : IWebSiteCrawler
             }
         }
     }
-}
-
-public class CrawlerOptions
-{
-    public int BatchSize { get; set; }
 }

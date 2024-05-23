@@ -1,10 +1,5 @@
 using Microsoft.Extensions.Options;
 
-public interface IWebSiteStore
-{
-    Task Save(string filename, byte[] bytes);
-}
-
 public class WebSiteStore : IWebSiteStore
 {
     private readonly StoreOptions _storeOptions;

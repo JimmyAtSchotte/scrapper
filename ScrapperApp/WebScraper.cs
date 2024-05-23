@@ -2,11 +2,6 @@ using Microsoft.Extensions.Logging;
 
 namespace ScrapperApp;
 
-public interface IWebScraper
-{
-    Task<IScrapResult> ScrapPath(RelativeUriPath path);
-}
-
 public class WebScraper : IWebScraper
 {
     private readonly HttpClient _httpClient;
