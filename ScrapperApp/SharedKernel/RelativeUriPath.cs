@@ -13,9 +13,11 @@ public class RelativeUriPath
     {
         _path = path;
     }
-
-    public Uri CreateRelativeUri(Uri baseAddress)
+    
+    public Uri CreateRelativeUri(Uri? baseAddress)
     {
+        ArgumentNullException.ThrowIfNull(baseAddress);
+        
         return new Uri(baseAddress, ToString());
     }
 
