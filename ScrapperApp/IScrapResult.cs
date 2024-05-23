@@ -3,6 +3,6 @@
 public interface IScrapResult
 {
     string GetFileName();
-    IEnumerable<string> GetLinkedFiles();
+    IEnumerable<RelativeUriPath> GetLinkedFiles();
     byte[] GetContent();
 }

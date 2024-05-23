@@ -15,7 +15,7 @@ public class HtmlPageScrapResult : IScrapResult
         _uri = uri;
     }
 
-    public IEnumerable<string> GetLinkedFiles()
+    public IEnumerable<RelativeUriPath> GetLinkedFiles()
     {
         foreach (var link in GetHrefLinks())
             yield return link;
@@ -30,13 +30,14 @@ public class HtmlPageScrapResult : IScrapResult
             yield return link;
     }
 
-    private IEnumerable<string> GetHrefLinks()
+    private IEnumerable<RelativeUriPath> GetHrefLinks()
     {
         return _htmlDocument.DocumentNode.SelectNodes("//a[@href]")?
             .Select(linkNode => linkNode.GetAttributeValue("href", ""))
             .Where(link => !link.StartsWith("http") || link.Contains(_uri.Host))
             .Select(link => new Uri(_uri, link).PathAndQuery.Substring(1))
             .Distinct()
+            .Select(link => new RelativeUriPath(link))
             .ToArray() ?? [];
     }
 
@@ -62,30 +63,33 @@ public class HtmlPageScrapResult : IScrapResult
             : $"{_uri.AbsolutePath}/index.html".Substring(1);
     }
 
-    private IEnumerable<string> GetImages()
+    private IEnumerable<RelativeUriPath> GetImages()
     {
         return _htmlDocument.DocumentNode.SelectNodes("//img[@src]")?
             .Select(linkNode => linkNode.GetAttributeValue("src", ""))
             .Select(link => new Uri(_uri, link).PathAndQuery.Substring(1))
             .Distinct()
+            .Select(link => new RelativeUriPath(link))
             .ToArray() ?? [];
     }
 
-    private IEnumerable<string> GetCssFiles()
+    private IEnumerable<RelativeUriPath> GetCssFiles()
     {
         return _htmlDocument.DocumentNode.SelectNodes("//link[@href]")?
             .Select(linkNode => linkNode.GetAttributeValue("href", ""))
             .Select(link => new Uri(_uri, link).PathAndQuery.Substring(1))
             .Distinct()
+            .Select(link => new RelativeUriPath(link))
             .ToArray() ?? [];
     }
 
-    private IEnumerable<string> GetJsFiles()
+    private IEnumerable<RelativeUriPath> GetJsFiles()
     {
         return _htmlDocument.DocumentNode.SelectNodes("//script[@src]")?
             .Select(linkNode => linkNode.GetAttributeValue("src", ""))
             .Select(link => new Uri(_uri, link).PathAndQuery.Substring(1))
             .Distinct()
+            .Select(link => new RelativeUriPath(link))
             .ToArray() ?? [];
     }
 

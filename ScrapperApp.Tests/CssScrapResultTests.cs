@@ -17,10 +17,10 @@ public class CssScrapResultTests
         var links = cssFile.GetLinkedFiles().ToList();
 
         links.Should().HaveCount(5);
-        links.Should().Contain("fonts/fontawesome-webfont.eot?v=3.2.1");
-        links.Should().Contain("fonts/fontawesome-webfont.eot?");
-        links.Should().Contain("fonts/fontawesome-webfont.woff?v=3.2.1");
-        links.Should().Contain("fonts/fontawesome-webfont.ttf?v=3.2.1");
-        links.Should().Contain("fonts/fontawesome-webfont.svg");
+        links.Should().Contain(x => x.ToString() == "fonts/fontawesome-webfont.eot?v=3.2.1");
+        links.Should().Contain(x => x.ToString() == "fonts/fontawesome-webfont.eot?");
+        links.Should().Contain(x => x.ToString() == "fonts/fontawesome-webfont.woff?v=3.2.1");
+        links.Should().Contain(x => x.ToString() == "fonts/fontawesome-webfont.ttf?v=3.2.1");
+        links.Should().Contain(x => x.ToString() == "fonts/fontawesome-webfont.svg");
     }
 }

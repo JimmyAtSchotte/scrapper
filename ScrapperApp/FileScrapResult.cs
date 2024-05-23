@@ -11,7 +11,7 @@ public class FileScrapResult : IScrapResult
         _content = content;
     }
 
-    public IEnumerable<string> GetLinkedFiles() => Enumerable.Empty<string>();
+    public IEnumerable<RelativeUriPath> GetLinkedFiles() => Enumerable.Empty<RelativeUriPath>();
 
     public string GetFileName()
     {

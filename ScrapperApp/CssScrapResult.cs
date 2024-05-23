@@ -15,7 +15,7 @@ public class CssScrapResult : IScrapResult
         _content = content;
     }
 
-    public IEnumerable<string> GetLinkedFiles()
+    public IEnumerable<RelativeUriPath> GetLinkedFiles()
     {
         var text = Encoding.UTF8.GetString(_content);
         var urlRegex = new Regex(@"url\(['""]?(.*?)['""]?\)", RegexOptions.IgnoreCase);
@@ -23,7 +23,7 @@ public class CssScrapResult : IScrapResult
         var matches = urlRegex.Matches(text);
         foreach (Match match in matches)
             if (match.Success)
-                yield return HttpUtility.UrlDecode(new Uri(_uri, match.Groups[1].Value).PathAndQuery.Substring(1));
+                yield return new RelativeUriPath(HttpUtility.UrlDecode(new Uri(_uri, match.Groups[1].Value).PathAndQuery.Substring(1)));
     }
     public string GetFileName()
     {

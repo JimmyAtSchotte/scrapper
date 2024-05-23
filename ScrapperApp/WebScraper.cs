@@ -4,7 +4,7 @@ namespace ScrapperApp;
 
 public interface IWebScraper
 {
-    Task<IScrapResult> ScrapPath(string path);
+    Task<IScrapResult> ScrapPath(RelativeUriPath path);
 }
 
 public class WebScraper : IWebScraper
@@ -12,21 +12,15 @@ public class WebScraper : IWebScraper
     private readonly HttpClient _httpClient;
     private readonly ILogger<WebScraper> _logger;
 
-    private static string[] _defaultDocuments = new[]
-    {
-        "index.html"
-    };
-    
     public WebScraper(IHttpClientFactory httpClientFactory, ILogger<WebScraper> logger)
     {
         _logger = logger;
         _httpClient = httpClientFactory.CreateClient();
     }
     
-
-    public async Task<IScrapResult> ScrapPath(string path)
+    public async Task<IScrapResult> ScrapPath(RelativeUriPath path)
     {
-        var uri = new Uri(_httpClient.BaseAddress, DefaultDocumentToFolderPath(path));
+        var uri = path.CreateRelativeUri(_httpClient.BaseAddress);
         
         _logger.LogTrace("Begin request {Uri}", uri);
         
@@ -34,7 +28,6 @@ public class WebScraper : IWebScraper
         var content = await response.Content.ReadAsByteArrayAsync();
         
         _logger.LogTrace("Complete request {Uri}, status: {HttpStatus}", uri, response.StatusCode);
-
         
         if (response.Content.Headers.ContentType?.MediaType == "text/html")
             return HtmlPageScrapResult.Create(content, uri);
@@ -43,14 +36,5 @@ public class WebScraper : IWebScraper
             return CssScrapResult.Create(content, uri);
         
         return FileScrapResult.Create(content, uri);
-    }
-   
-    private static string DefaultDocumentToFolderPath(string path)
-    {
-        foreach (var defaultDocument in _defaultDocuments)
-            if (path.EndsWith(defaultDocument)) 
-                return path[..^defaultDocument.Length];
-        
-        return path;
     }
 }

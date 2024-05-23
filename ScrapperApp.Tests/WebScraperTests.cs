@@ -20,7 +20,7 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResult = await scrapper.ScrapPath("");
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         Encoding.UTF8.GetString(scrapResult.GetContent()).Should().Be(html);
     }
@@ -38,9 +38,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResult = await scrapper.ScrapPath("");
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
-        scrapResult.GetLinkedFiles().Should().Contain("pageA.html");
+        scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA.html");
     }
     
     [Test]
@@ -56,9 +56,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResult = await scrapper.ScrapPath("");
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
         
-        scrapResult.GetLinkedFiles().Should().Contain("pageA");
+        scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA");
     }
     
     [Test]
@@ -74,9 +74,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResult = await scrapper.ScrapPath("pageA");
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath("pageA"));
 
-        scrapResult.GetLinkedFiles().Should().Contain("");
+        scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() =="");
     }
     
     [Test]
@@ -92,7 +92,7 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResult = await scrapper.ScrapPath("");
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         scrapResult.GetLinkedFiles().Should().HaveCount(0);
     }
@@ -110,7 +110,7 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResult = await scrapper.ScrapPath("");
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         scrapResult.GetLinkedFiles().Should().HaveCount(1);
     }
@@ -129,7 +129,7 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResult = await scrapper.ScrapPath("");
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         scrapResult.GetLinkedFiles().Should().HaveCount(5);
     }
