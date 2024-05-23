@@ -15,13 +15,13 @@ public class WebScraperTests
     {
         var html = "<html><body></body></html>";
         
-        var arrange = Arrange.Dependencies<WebScraper, WebScraper>(dependencies =>
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
             HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(html, Encoding.UTF8, "text/html")));
         });
 
-        var scrapper = arrange.Resolve<WebScraper>();
+        var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         Encoding.UTF8.GetString(scrapResult.GetContent()).Should().Be(html);
@@ -32,14 +32,14 @@ public class WebScraperTests
     {
         var indexHtml = "<html><body><a href=\"pageA.html\">LINK</a></body></html>";
         
-        var arrange = Arrange.Dependencies<WebScraper, WebScraper>(dependencies =>
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
                 HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
             );
         });
 
-        var scrapper = arrange.Resolve<WebScraper>();
+        var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA.html");
@@ -50,14 +50,14 @@ public class WebScraperTests
     {
         var indexHtml = "<html><body><a href=\"pageA\">LINK</a></body></html>";
         
-        var arrange = Arrange.Dependencies<WebScraper, WebScraper>(dependencies =>
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
             HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
             );
         });
 
-        var scrapper = arrange.Resolve<WebScraper>();
+        var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
         
         scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA");
@@ -68,14 +68,14 @@ public class WebScraperTests
     {
         var pageAHtml = "<html><body><a href=\"../\">LINK</a></body></html>";
         
-        var arrange = Arrange.Dependencies<WebScraper, WebScraper>(dependencies =>
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
             HttpClientConfig.Create(new Uri("http://localhost/pageA"), response => response.Content = new StringContent(pageAHtml, Encoding.UTF8, "text/html"))
             );
         });
 
-        var scrapper = arrange.Resolve<WebScraper>();
+        var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath("pageA"));
 
         scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() =="");
@@ -86,14 +86,14 @@ public class WebScraperTests
     {
         var indexHtml = "<html><body><a href=\"http://external.com/pageA/page.html\">LINK</a></body></html>";
    
-        var arrange = Arrange.Dependencies<WebScraper, WebScraper>(dependencies =>
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
             HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
             );
         });
 
-        var scrapper = arrange.Resolve<WebScraper>();
+        var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         scrapResult.GetLinkedFiles().Should().HaveCount(0);
@@ -104,14 +104,14 @@ public class WebScraperTests
     {
         var indexHtml = "<html><body><a href=\"http://localhost/page.html\">LINK</a></body></html>";
    
-        var arrange = Arrange.Dependencies<WebScraper, WebScraper>(dependencies =>
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
             HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
             );
         });
 
-        var scrapper = arrange.Resolve<WebScraper>();
+        var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         scrapResult.GetLinkedFiles().Should().HaveCount(1);
@@ -123,14 +123,14 @@ public class WebScraperTests
     {
         var css = "@font-face {\n  font-family: 'FontAwesome';\n  src: url('../fonts/fontawesome-webfont.eot%3Fv=3.2.1');\n  src: url('../fonts/fontawesome-webfont.eot%3F') format('embedded-opentype'), url('../fonts/fontawesome-webfont.woff%3Fv=3.2.1') format('woff'), url('../fonts/fontawesome-webfont.ttf%3Fv=3.2.1') format('truetype'), url('../fonts/fontawesome-webfont.svg') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}";
    
-        var arrange = Arrange.Dependencies<WebScraper, WebScraper>(dependencies =>
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
         {
             dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
             HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(css, Encoding.UTF8, "text/css"))
             );
         });
 
-        var scrapper = arrange.Resolve<WebScraper>();
+        var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
         scrapResult.GetLinkedFiles().Should().HaveCount(5);
