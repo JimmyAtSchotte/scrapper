@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using ScrapperApp.Crawler;
 using ScrapperApp.Scraper;
+using ScrapperApp.SharedKernel;
 using ScrapperApp.Storage;
 
 namespace ScrapperApp.Tests.Crawler;
@@ -46,5 +47,24 @@ public class WebCrawlerTests
 
         storePaths.Should().Contain("index.html");
         storePaths.Should().Contain("page/index.html");
+    }
+    
+    
+    [Test]
+    public async Task SkipFailedScrapes()
+    {
+        var storePaths = new List<string>();
+        
+        var arrange = Arrange.Dependencies<IWebSiteCrawler, WebSiteCrawler>(dependencies =>
+        {
+            dependencies.UseMock<IOptions<CrawlerOptions>>(mock => mock.SetupGet(x => x.Value).Returns(_crawlerOptions));
+            dependencies.UseMock<IWebScraper>(mock => mock.Setup(x => x.ScrapPath(It.IsAny<RelativeUriPath>())).ReturnsAsync(Maybe<IWebEntity>.WithoutValue));
+            dependencies.UseMock<IWebSiteStore>(mock => mock.Setup(x => x.Save(Capture.In(storePaths), It.IsAny<byte[]>())));
+        });
+
+        var crawler = arrange.Resolve<IWebSiteCrawler>();
+        await crawler.StartCrawling();
+
+        storePaths.Should().BeEmpty();
     }
 }

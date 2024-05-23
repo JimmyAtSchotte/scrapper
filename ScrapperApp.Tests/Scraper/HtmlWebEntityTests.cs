@@ -41,7 +41,7 @@ public class HtmlWebEntityTests
         var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var links = htmlPage.GetLinkedFiles();
 
-        links.FirstOrDefault().Should().Be("pages/page2");
+        links.FirstOrDefault().ToString().Should().Be("pages/page2");
     }
     
     [Test]
@@ -66,6 +66,18 @@ public class HtmlWebEntityTests
         var links = htmlPage.GetLinkedFiles();
 
         links.Should().HaveCount(1);
+    }
+    
+    [Test]
+    public void EmptyHrefAttribute()
+    {
+        var uri = new Uri("https://localhost/");
+        var content = "<html><body><a href></a></body></html>";
+        var bytes = Encoding.UTF8.GetBytes(content);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
+        var links = htmlPage.GetLinkedFiles();
+
+        links.Should().HaveCount(0);
     }
     
     [Test]
@@ -118,6 +130,18 @@ public class HtmlWebEntityTests
     }
     
     [Test]
+    public void EmptyImgSrcAttribute()
+    {
+        var uri = new Uri("https://localhost/");
+        var content = "<html><body><img src></body></html>";
+        var bytes = Encoding.UTF8.GetBytes(content);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
+        var images = htmlPage.GetLinkedFiles();
+
+        images.Should().HaveCount(0);
+    }
+    
+    [Test]
     public void HasCssFiles()
     {
         var uri = new Uri("https://localhost/");
@@ -127,6 +151,19 @@ public class HtmlWebEntityTests
         var cssFiles = htmlPage.GetLinkedFiles();
 
         cssFiles.Should().HaveCount(1);
+    }
+    
+        
+    [Test]
+    public void EmptyCssAttribute()
+    {
+        var uri = new Uri("https://localhost/");
+        var content = "<html><link href/><body></body></html>";
+        var bytes = Encoding.UTF8.GetBytes(content);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
+        var images = htmlPage.GetLinkedFiles();
+
+        images.Should().HaveCount(0);
     }
     
     [Test]
@@ -139,6 +176,18 @@ public class HtmlWebEntityTests
         var jsFiles = htmlPage.GetLinkedFiles();
 
         jsFiles.Should().HaveCount(1);
+    }
+    
+    [Test]
+    public void EmptyJavascriptSrcAttribute()
+    {
+        var uri = new Uri("https://localhost/");
+        var content = "<html><script src /><body></body></html>";
+        var bytes = Encoding.UTF8.GetBytes(content);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
+        var images = htmlPage.GetLinkedFiles();
+
+        images.Should().HaveCount(0);
     }
     
     [Test]

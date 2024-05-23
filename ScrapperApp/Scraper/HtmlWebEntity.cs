@@ -6,6 +6,7 @@ namespace ScrapperApp.Scraper;
 
 public class HtmlWebEntity : IWebEntity
 {
+    private const string DefaultAttributeValue = "";
     private readonly byte[] _bytes;
     private readonly HtmlDocument _htmlDocument;
     private readonly Uri _uri;
@@ -34,7 +35,8 @@ public class HtmlWebEntity : IWebEntity
     private IEnumerable<RelativeUriPath> GetHrefLinks()
     {
         return _htmlDocument.DocumentNode.SelectNodes("//a[@href]")?
-            .Select(linkNode => linkNode.GetAttributeValue("href", ""))
+            .Select(linkNode => linkNode.GetAttributeValue("href", DefaultAttributeValue))
+            .Where(link => link != DefaultAttributeValue)
             .Where(link => !link.StartsWith("http") || link.Contains(_uri.Host))
             .Select(link => new Uri(_uri, link).PathAndQuery.Substring(1))
             .Distinct()
@@ -53,9 +55,6 @@ public class HtmlWebEntity : IWebEntity
 
     public string GetFileName()
     {
-        if (_uri.AbsolutePath == "/")
-            return "index.html";
-        
         if (_uri.AbsolutePath.Contains("."))
             return _uri.AbsolutePath.Substring(1);
         
@@ -67,7 +66,8 @@ public class HtmlWebEntity : IWebEntity
     private IEnumerable<RelativeUriPath> GetImages()
     {
         return _htmlDocument.DocumentNode.SelectNodes("//img[@src]")?
-            .Select(linkNode => linkNode.GetAttributeValue("src", ""))
+            .Select(linkNode => linkNode.GetAttributeValue("src", DefaultAttributeValue))
+            .Where(link => link != DefaultAttributeValue)
             .Select(link => new Uri(_uri, link).PathAndQuery.Substring(1))
             .Distinct()
             .Select(link => new RelativeUriPath(link))
@@ -77,7 +77,8 @@ public class HtmlWebEntity : IWebEntity
     private IEnumerable<RelativeUriPath> GetCssFiles()
     {
         return _htmlDocument.DocumentNode.SelectNodes("//link[@href]")?
-            .Select(linkNode => linkNode.GetAttributeValue("href", ""))
+            .Select(linkNode => linkNode.GetAttributeValue("href", DefaultAttributeValue))   
+            .Where(link => link != DefaultAttributeValue)
             .Select(link => new Uri(_uri, link).PathAndQuery.Substring(1))
             .Distinct()
             .Select(link => new RelativeUriPath(link))
@@ -87,7 +88,8 @@ public class HtmlWebEntity : IWebEntity
     private IEnumerable<RelativeUriPath> GetJsFiles()
     {
         return _htmlDocument.DocumentNode.SelectNodes("//script[@src]")?
-            .Select(linkNode => linkNode.GetAttributeValue("src", ""))
+            .Select(linkNode => linkNode.GetAttributeValue("src", DefaultAttributeValue))     
+            .Where(link => link != DefaultAttributeValue)
             .Select(link => new Uri(_uri, link).PathAndQuery.Substring(1))
             .Distinct()
             .Select(link => new RelativeUriPath(link))

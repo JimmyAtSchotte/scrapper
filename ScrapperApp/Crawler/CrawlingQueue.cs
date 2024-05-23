@@ -7,11 +7,6 @@ public class CrawlingQueue
     private readonly Queue<RelativeUriPath> _queue;
     private readonly HashSet<string> _memory;
     
-    private static string[] _defaultDocuments = new[]
-    {
-        "index.html"
-    };
-    
     public CrawlingQueue()
     {
         _queue = new Queue<RelativeUriPath>();

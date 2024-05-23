@@ -11,7 +11,6 @@ public class Maybe<T>
     
     private Maybe()
     {
-        _value = default(T);
     }
 
     public bool TryGetValue(out T output)
