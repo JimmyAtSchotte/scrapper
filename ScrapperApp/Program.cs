@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.IO.Abstractions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ScrapperApp;
 using ScrapperApp.Crawler;
 using ScrapperApp.Scraper;
 using ScrapperApp.Storage;
@@ -29,6 +29,7 @@ serviceCollection.AddLogging(logger =>
 serviceCollection.AddScoped<IWebScraper, WebScraper>();
 serviceCollection.AddScoped<IWebSiteCrawler, WebSiteCrawler>();
 serviceCollection.AddScoped<IWebSiteStore, LocalWebSiteStore>();
+serviceCollection.AddScoped<IFileSystem, FileSystem>();
 
 var services = serviceCollection.BuildServiceProvider();
 var webSiteCrawler = services.GetService<IWebSiteCrawler>();
