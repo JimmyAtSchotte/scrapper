@@ -2,7 +2,7 @@
 using FluentAssertions;
 using ScrapperApp.Scraper;
 
-namespace ScrapperApp.Tests;
+namespace ScrapperApp.Tests.Scraper;
 
 [TestFixture]
 public class CssScrapResultTests

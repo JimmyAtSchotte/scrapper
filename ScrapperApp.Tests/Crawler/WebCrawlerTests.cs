@@ -9,7 +9,7 @@ using ScrapperApp.Crawler;
 using ScrapperApp.Scraper;
 using ScrapperApp.Storage;
 
-namespace ScrapperApp.Tests;
+namespace ScrapperApp.Tests.Crawler;
 
 [TestFixture]
 public class WebCrawlerTests

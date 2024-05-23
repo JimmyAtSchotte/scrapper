@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using ScrapperApp.Crawler;
 
-namespace ScrapperApp.Tests;
+namespace ScrapperApp.Tests.Crawler;
 
 [TestFixture]
 public class CrawlingQueueTests

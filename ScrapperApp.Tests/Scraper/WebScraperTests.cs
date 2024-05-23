@@ -5,7 +5,7 @@ using FluentAssertions;
 using ScrapperApp.Scraper;
 using ScrapperApp.SharedKernel;
 
-namespace ScrapperApp.Tests;
+namespace ScrapperApp.Tests.Scraper;
 
 public class WebScraperTests
 {
