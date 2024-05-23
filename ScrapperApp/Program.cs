@@ -7,15 +7,22 @@ var configuration = new ConfigurationBuilder()
     .AddInMemoryCollection(new List<KeyValuePair<string, string>>
     {
         new ("Store:Path", "Scraped"),
-        new ("Url", "https://books.toscrape.com/")
+        new ("Url", "https://books.toscrape.com/"),
+        new ("Crawler:BatchSize", "100")
     }!)
+    .AddJsonFile("appsettings.json")
     .AddCommandLine(args)
     .Build();
 
 var serviceCollection = new ServiceCollection();
 serviceCollection.AddOptions<StoreOptions>().Bind(configuration.GetSection("Store"));
+serviceCollection.AddOptions<CrawlerOptions>().Bind(configuration.GetSection("Crawler"));
 serviceCollection.AddHttpClient("", client => client.BaseAddress = new Uri(configuration.GetValue<string>("Url")));
-serviceCollection.AddLogging(logger => logger.AddConsole());
+serviceCollection.AddLogging(logger =>
+{
+    logger.AddConfiguration(configuration.GetSection("Logging"));
+    logger.AddConsole();
+});
 serviceCollection.AddScoped<IWebScraper, WebScraper>();
 serviceCollection.AddScoped<IWebSiteCrawler, WebSiteCrawler>();
 serviceCollection.AddScoped<IWebSiteStore, WebSiteStore>();

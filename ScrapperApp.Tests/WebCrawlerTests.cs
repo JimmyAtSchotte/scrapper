@@ -3,6 +3,7 @@ using ArrangeDependencies.Autofac;
 using ArrangeDependencies.Autofac.Extensions;
 using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace ScrapperApp.Tests;
@@ -10,6 +11,11 @@ namespace ScrapperApp.Tests;
 [TestFixture]
 public class WebCrawlerTests
 {
+    private readonly CrawlerOptions _crawlerOptions = new CrawlerOptions()
+    {
+        BatchSize = 10
+    };
+    
     [Test]
     public async Task StoreLinkedPage()
     {
@@ -19,10 +25,12 @@ public class WebCrawlerTests
         var indexHtml = "<html><body><a href=\"page\">LINK</a></body></html>";
         var pageHtml = "<html><body></body></html>";
         var storePaths = new List<string>();
+      
         
         var arrange = Arrange.Dependencies<IWebSiteCrawler, WebSiteCrawler>(dependencies =>
         {
             dependencies.UseImplementation<IWebScraper, WebScraper>();
+            dependencies.UseMock<IOptions<CrawlerOptions>>(mock => mock.SetupGet(x => x.Value).Returns(_crawlerOptions));
             dependencies.UseHttpClientFactory(client => client.BaseAddress = baseUri, 
                 HttpClientConfig.Create(baseUri, response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html")),
                 HttpClientConfig.Create(pageUri, response => response.Content = new StringContent(pageHtml,  Encoding.UTF8, "text/html"))

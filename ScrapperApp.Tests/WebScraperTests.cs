@@ -20,9 +20,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResults = await scrapper.StartScrapping();
+        var scrapResult = await scrapper.ScrapPath("");
 
-        Encoding.UTF8.GetString(scrapResults.FirstOrDefault().GetContent()).Should().Be(html);
+        Encoding.UTF8.GetString(scrapResult.GetContent()).Should().Be(html);
     }
     
     [Test]
@@ -38,9 +38,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResults = await scrapper.StartScrapping();
+        var scrapResult = await scrapper.ScrapPath("");
 
-        scrapResults.FirstOrDefault().GetLinkedFiles().Should().Contain("pageA.html");
+        scrapResult.GetLinkedFiles().Should().Contain("pageA.html");
     }
     
     [Test]
@@ -56,29 +56,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResults = await scrapper.StartScrapping();
+        var scrapResult = await scrapper.ScrapPath("");
         
-        scrapResults.FirstOrDefault().GetLinkedFiles().Should().Contain("pageA");
-    }
-    
-    [Test]
-    public async Task DontScrapSamePageTwice()
-    {
-        var indexHtml = "<html><body><a href=\"pageA\">LINK</a></body></html>";
-        
-        var arrange = Arrange.Dependencies<WebScraper, WebScraper>(dependencies =>
-        {
-            dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
-            HttpClientConfig.Create(new Uri("http://localhost/"), response => response.Content = new StringContent(indexHtml, Encoding.UTF8, "text/html"))
-            );
-        });
-
-        var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResult1 = await scrapper.StartScrapping();
-        var scrapResult2 = await scrapper.StartScrapping();
-
-        scrapResult1.Should().NotBeEmpty();
-        scrapResult2.Should().BeEmpty();
+        scrapResult.GetLinkedFiles().Should().Contain("pageA");
     }
     
     [Test]
@@ -94,9 +74,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResults = await scrapper.StartScrapping("pageA");
+        var scrapResult = await scrapper.ScrapPath("pageA");
 
-        scrapResults.FirstOrDefault().GetLinkedFiles().Should().Contain("");
+        scrapResult.GetLinkedFiles().Should().Contain("");
     }
     
     [Test]
@@ -112,9 +92,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResults = await scrapper.StartScrapping("");
+        var scrapResult = await scrapper.ScrapPath("");
 
-        scrapResults.FirstOrDefault().GetLinkedFiles().Should().HaveCount(0);
+        scrapResult.GetLinkedFiles().Should().HaveCount(0);
     }
     
     [Test]
@@ -130,9 +110,9 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResults = await scrapper.StartScrapping("");
+        var scrapResult = await scrapper.ScrapPath("");
 
-        scrapResults.FirstOrDefault().GetLinkedFiles().Should().HaveCount(1);
+        scrapResult.GetLinkedFiles().Should().HaveCount(1);
     }
     
     
@@ -149,8 +129,8 @@ public class WebScraperTests
         });
 
         var scrapper = arrange.Resolve<WebScraper>();
-        var scrapResults = await scrapper.StartScrapping("");
+        var scrapResult = await scrapper.ScrapPath("");
 
-        scrapResults.FirstOrDefault().GetLinkedFiles().Should().HaveCount(5);
+        scrapResult.GetLinkedFiles().Should().HaveCount(5);
     }
 }
