@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
+using ScrapperApp.SharedKernel;
 
-namespace ScrapperApp;
+namespace ScrapperApp.Scraper;
 
 public class WebScraper : IWebScraper
 {

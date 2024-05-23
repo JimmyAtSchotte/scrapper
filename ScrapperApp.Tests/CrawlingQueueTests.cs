@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using ScrapperApp.Crawler;
 
 namespace ScrapperApp.Tests;
 

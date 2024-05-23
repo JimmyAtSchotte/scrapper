@@ -1,6 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ScrapperApp;
+using ScrapperApp.Scraper;
+using ScrapperApp.Storage;
+
+namespace ScrapperApp.Crawler;
 
 public class WebSiteCrawler : IWebSiteCrawler
 {

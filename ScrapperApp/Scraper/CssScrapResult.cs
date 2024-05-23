@@ -1,8 +1,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using ScrapperApp.SharedKernel;
 
-namespace ScrapperApp;
+namespace ScrapperApp.Scraper;
 
 public class CssScrapResult : IScrapResult
 {

@@ -1,4 +1,4 @@
-﻿namespace ScrapperApp;
+﻿namespace ScrapperApp.SharedKernel;
 
 public class RelativeUriPath
 {

@@ -2,6 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ScrapperApp;
+using ScrapperApp.Crawler;
+using ScrapperApp.Scraper;
+using ScrapperApp.Storage;
 
 var configuration = new ConfigurationBuilder()
     .AddInMemoryCollection(new List<KeyValuePair<string, string>>

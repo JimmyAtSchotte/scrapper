@@ -1,4 +1,6 @@
-﻿namespace ScrapperApp;
+﻿using ScrapperApp.SharedKernel;
+
+namespace ScrapperApp.Crawler;
 
 public class CrawlingQueue
 {

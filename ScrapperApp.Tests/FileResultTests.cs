@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using FluentAssertions;
+using ScrapperApp.Scraper;
 
 namespace ScrapperApp.Tests;
 

@@ -2,6 +2,8 @@ using System.Text;
 using ArrangeDependencies.Autofac;
 using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
+using ScrapperApp.Scraper;
+using ScrapperApp.SharedKernel;
 
 namespace ScrapperApp.Tests;
 

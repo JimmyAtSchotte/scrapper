@@ -1,7 +1,8 @@
 using System.Text;
 using HtmlAgilityPack;
+using ScrapperApp.SharedKernel;
 
-namespace ScrapperApp;
+namespace ScrapperApp.Scraper;
 
 public class HtmlPageScrapResult : IScrapResult
 {

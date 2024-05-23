@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Options;
 
+namespace ScrapperApp.Storage;
+
 public class WebSiteStore : IWebSiteStore
 {
     private readonly StoreOptions _storeOptions;

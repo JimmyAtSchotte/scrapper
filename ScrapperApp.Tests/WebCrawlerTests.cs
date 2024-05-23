@@ -5,6 +5,9 @@ using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
+using ScrapperApp.Crawler;
+using ScrapperApp.Scraper;
+using ScrapperApp.Storage;
 
 namespace ScrapperApp.Tests;
 
