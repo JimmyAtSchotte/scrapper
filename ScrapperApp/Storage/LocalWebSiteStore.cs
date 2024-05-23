@@ -2,11 +2,11 @@ using Microsoft.Extensions.Options;
 
 namespace ScrapperApp.Storage;
 
-public class WebSiteStore : IWebSiteStore
+public class LocalWebSiteStore : IWebSiteStore
 {
     private readonly StoreOptions _storeOptions;
 
-    public WebSiteStore(IOptions<StoreOptions> storeOptions)
+    public LocalWebSiteStore(IOptions<StoreOptions> storeOptions)
     {
         _storeOptions = storeOptions.Value;
     }

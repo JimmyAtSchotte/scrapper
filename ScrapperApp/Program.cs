@@ -28,7 +28,7 @@ serviceCollection.AddLogging(logger =>
 });
 serviceCollection.AddScoped<IWebScraper, WebScraper>();
 serviceCollection.AddScoped<IWebSiteCrawler, WebSiteCrawler>();
-serviceCollection.AddScoped<IWebSiteStore, WebSiteStore>();
+serviceCollection.AddScoped<IWebSiteStore, LocalWebSiteStore>();
 
 var services = serviceCollection.BuildServiceProvider();
 var webSiteCrawler = services.GetService<IWebSiteCrawler>();
