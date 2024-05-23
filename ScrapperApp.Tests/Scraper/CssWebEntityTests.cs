@@ -24,4 +24,26 @@ public class CssWebEntityTests
         links.Should().Contain(x => x.ToString() == "fonts/fontawesome-webfont.ttf?v=3.2.1");
         links.Should().Contain(x => x.ToString() == "fonts/fontawesome-webfont.svg");
     }
+    
+    [Test]
+    public void OriginalContent()
+    {
+        var originalContent = "Hello World";
+        var uri = new Uri("https://localhost/fonts/fontawesome-webfont.eot");
+        var bytes = Encoding.UTF8.GetBytes(originalContent);
+        var cssFile = CssWebEntity.Create(bytes, uri);
+
+        var content = Encoding.UTF8.GetString(cssFile.GetContent());
+        content.Should().Be(originalContent);
+    }
+    
+    [Test]
+    public void Filename()
+    {
+        var uri = new Uri("https://localhost/fonts/fontawesome-webfont.eot");
+        var bytes = Array.Empty<byte>();
+        var cssFile = CssWebEntity.Create(bytes, uri);
+
+        cssFile.GetFileName().Should().Be("fonts/fontawesome-webfont.eot");
+    }
 }
