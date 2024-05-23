@@ -31,6 +31,11 @@ To customize the execution, you can use the following options:
   dotnet run -p ScrapperApp -- Url=https://example.com
   ```
 
+- **Change the log level to trace for more log events** (default: `Debug`):
+  ```bash
+  dotnet run -p ScrapperApp -- Logging:LogLevel:Default=Trace  
+  ```
+
 - **Combine options**:
   ```bash
   dotnet run -p ScrapperApp -- Url=https://example.com Store:Path=MyPath

@@ -10,14 +10,16 @@ public interface IWebScraper
 public class WebScraper : IWebScraper
 {
     private readonly HttpClient _httpClient;
+    private readonly ILogger<WebScraper> _logger;
 
     private static string[] _defaultDocuments = new[]
     {
         "index.html"
     };
     
-    public WebScraper(IHttpClientFactory httpClientFactory)
+    public WebScraper(IHttpClientFactory httpClientFactory, ILogger<WebScraper> logger)
     {
+        _logger = logger;
         _httpClient = httpClientFactory.CreateClient();
     }
     
@@ -26,8 +28,13 @@ public class WebScraper : IWebScraper
     {
         var uri = new Uri(_httpClient.BaseAddress, DefaultDocumentToFolderPath(path));
         
+        _logger.LogTrace("Begin request {Uri}", uri);
+        
         var response = await _httpClient.GetAsync(uri.AbsolutePath);
         var content = await response.Content.ReadAsByteArrayAsync();
+        
+        _logger.LogTrace("Complete request {Uri}, status: {HttpStatus}", uri, response.StatusCode);
+
         
         if (response.Content.Headers.ContentType?.MediaType == "text/html")
             return HtmlPageScrapResult.Create(content, uri);
