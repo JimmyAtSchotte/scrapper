@@ -2,12 +2,12 @@ using ScrapperApp.SharedKernel;
 
 namespace ScrapperApp.Scraper;
 
-public class FileScrapResult : IScrapResult
+public class FileWebEntity : IWebEntity
 {
     private Uri _uri;
     private byte[] _content;
 
-    private FileScrapResult(byte[] content, Uri uri)
+    private FileWebEntity(byte[] content, Uri uri)
     {
         _uri = uri;
         _content = content;
@@ -22,9 +22,9 @@ public class FileScrapResult : IScrapResult
 
     public byte[] GetContent() => _content;
 
-    public static FileScrapResult Create(byte[] content, Uri uri)
+    public static FileWebEntity Create(byte[] content, Uri uri)
     {
-        return new FileScrapResult(content, uri);
+        return new FileWebEntity(content, uri);
     }
     
 }

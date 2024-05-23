@@ -5,7 +5,7 @@ using ScrapperApp.Scraper;
 namespace ScrapperApp.Tests.Scraper;
 
 [TestFixture]
-public class HtmlPageScrapResultTests
+public class HtmlWebEntityTests
 {
     [Test]
     public void HtmlPageNoLinks()
@@ -14,7 +14,7 @@ public class HtmlPageScrapResultTests
         var content = "<html><body></body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
 
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var links = htmlPage.GetLinkedFiles();
 
         links.Should().BeEmpty();
@@ -26,7 +26,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/");
         var content = "<html><body><a href=\"page.html\"</body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var links = htmlPage.GetLinkedFiles();
 
         links.Should().HaveCount(1);
@@ -38,7 +38,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/pages/page1");
         var content = "<html><body><a href=\"../pages/page2\"</body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var links = htmlPage.GetLinkedFiles();
 
         links.FirstOrDefault().Should().Be("pages/page2");
@@ -50,7 +50,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/");
         var content = "<html><body><a href=\"https://exernal/page.html\"</body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var links = htmlPage.GetLinkedFiles();
 
         links.Should().BeEmpty();
@@ -62,7 +62,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/");
         var content = $"<html><body><a href=\"https://{uri.Host}/page.html\"</body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var links = htmlPage.GetLinkedFiles();
 
         links.Should().HaveCount(1);
@@ -74,7 +74,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/");
         var content = "<html><body><a href=\"page.html\"</body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var fileName = htmlPage.GetFileName();
 
         fileName.Should().Be("index.html");
@@ -86,7 +86,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/page.html");
         var content = "<html><body><a href=\"page.html\"</body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var fileName = htmlPage.GetFileName();
 
         fileName.Should().Be("page.html");
@@ -99,7 +99,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri($"https://localhost/{dir}");
         var content = "<html><body><a href=\"page.html\"</body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var fileName = htmlPage.GetFileName();
 
         fileName.Should().Be("dir/index.html");
@@ -111,7 +111,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/");
         var content = "<html><body><img src=\"image.jpg\"></body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var images = htmlPage.GetLinkedFiles();
 
         images.Should().HaveCount(1);
@@ -123,7 +123,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/");
         var content = "<html><link href=\"css.css\" /><body></body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var cssFiles = htmlPage.GetLinkedFiles();
 
         cssFiles.Should().HaveCount(1);
@@ -135,7 +135,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/");
         var content = "<html><script src=\"js.js\" /><body></body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var jsFiles = htmlPage.GetLinkedFiles();
 
         jsFiles.Should().HaveCount(1);
@@ -147,7 +147,7 @@ public class HtmlPageScrapResultTests
         var uri = new Uri("https://localhost/");
         var content = "<html><script src=\"js.js\" /><body></body></html>";
         var bytes = Encoding.UTF8.GetBytes(content);
-        var htmlPage = HtmlPageScrapResult.Create(bytes, uri);
+        var htmlPage = HtmlWebEntity.Create(bytes, uri);
         var contentByte = htmlPage.GetContent();
 
         contentByte.Should().BeEquivalentTo(bytes, o => o.WithoutStrictOrdering());

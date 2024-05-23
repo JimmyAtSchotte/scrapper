@@ -2,7 +2,7 @@
 
 namespace ScrapperApp.Scraper;
 
-public interface IScrapResult
+public interface IWebEntity
 {
     string GetFileName();
     IEnumerable<RelativeUriPath> GetLinkedFiles();

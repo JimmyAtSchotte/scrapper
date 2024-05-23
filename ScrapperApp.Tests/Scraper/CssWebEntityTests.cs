@@ -5,7 +5,7 @@ using ScrapperApp.Scraper;
 namespace ScrapperApp.Tests.Scraper;
 
 [TestFixture]
-public class CssScrapResultTests
+public class CssWebEntityTests
 {
     [Test]
     public void CssWithLinks()
@@ -14,7 +14,7 @@ public class CssScrapResultTests
         var content = "@font-face {\n  font-family: 'FontAwesome';\n  src: url('../fonts/fontawesome-webfont.eot%3Fv=3.2.1');\n  src: url('../fonts/fontawesome-webfont.eot%3F') format('embedded-opentype'), url('../fonts/fontawesome-webfont.woff%3Fv=3.2.1') format('woff'), url('../fonts/fontawesome-webfont.ttf%3Fv=3.2.1') format('truetype'), url('../fonts/fontawesome-webfont.svg') format('svg');\n  font-weight: normal;\n  font-style: normal;\n}";
         var bytes = Encoding.UTF8.GetBytes(content);
 
-        var cssFile = CssScrapResult.Create(bytes, uri);
+        var cssFile = CssWebEntity.Create(bytes, uri);
         var links = cssFile.GetLinkedFiles().ToList();
 
         links.Should().HaveCount(5);

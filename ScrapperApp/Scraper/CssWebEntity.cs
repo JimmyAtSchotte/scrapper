@@ -5,12 +5,12 @@ using ScrapperApp.SharedKernel;
 
 namespace ScrapperApp.Scraper;
 
-public class CssScrapResult : IScrapResult
+public class CssWebEntity : IWebEntity
 {
     private readonly Uri _uri;
     private readonly byte[] _content;
 
-    private CssScrapResult(byte[] content, Uri uri)
+    private CssWebEntity(byte[] content, Uri uri)
     {
         _uri = uri;
         _content = content;
@@ -33,9 +33,9 @@ public class CssScrapResult : IScrapResult
 
     public byte[] GetContent() => _content;
 
-    public static CssScrapResult Create(byte[] content, Uri uri)
+    public static CssWebEntity Create(byte[] content, Uri uri)
     {
-        return new CssScrapResult(content, uri);
+        return new CssWebEntity(content, uri);
     }
     
 }

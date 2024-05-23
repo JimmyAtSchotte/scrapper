@@ -14,7 +14,7 @@ public class WebScraper : IWebScraper
         _httpClient = httpClientFactory.CreateClient();
     }
     
-    public async Task<IScrapResult> ScrapPath(RelativeUriPath path)
+    public async Task<IWebEntity> ScrapPath(RelativeUriPath path)
     {
         var uri = path.CreateRelativeUri(_httpClient.BaseAddress);
         
@@ -26,11 +26,11 @@ public class WebScraper : IWebScraper
         _logger.LogTrace("Complete request {Uri}, status: {HttpStatus}", uri, response.StatusCode);
         
         if (response.Content.Headers.ContentType?.MediaType == "text/html")
-            return HtmlPageScrapResult.Create(content, uri);
+            return HtmlWebEntity.Create(content, uri);
         
         if(response.Content.Headers.ContentType?.MediaType == "text/css")
-            return CssScrapResult.Create(content, uri);
+            return CssWebEntity.Create(content, uri);
         
-        return FileScrapResult.Create(content, uri);
+        return FileWebEntity.Create(content, uri);
     }
 }

@@ -4,12 +4,12 @@ using ScrapperApp.SharedKernel;
 
 namespace ScrapperApp.Scraper;
 
-public class HtmlPageScrapResult : IScrapResult
+public class HtmlWebEntity : IWebEntity
 {
     private readonly byte[] _bytes;
     private readonly HtmlDocument _htmlDocument;
     private readonly Uri _uri;
-    private HtmlPageScrapResult(byte[] bytes, HtmlDocument htmlDocument, Uri uri)
+    private HtmlWebEntity(byte[] bytes, HtmlDocument htmlDocument, Uri uri)
     {
         _bytes = bytes;
         _htmlDocument = htmlDocument;
@@ -42,13 +42,13 @@ public class HtmlPageScrapResult : IScrapResult
             .ToArray() ?? [];
     }
 
-    public static HtmlPageScrapResult Create(byte[] bytes, Uri uri)
+    public static HtmlWebEntity Create(byte[] bytes, Uri uri)
     {
         var html = Encoding.UTF8.GetString(bytes);
         var htmlDocument = new HtmlDocument();
         htmlDocument.LoadHtml(html);
         
-        return new HtmlPageScrapResult(bytes, htmlDocument, uri);
+        return new HtmlWebEntity(bytes, htmlDocument, uri);
     }
 
     public string GetFileName()

@@ -4,5 +4,5 @@ namespace ScrapperApp.Scraper;
 
 public interface IWebScraper
 {
-    Task<IScrapResult> ScrapPath(RelativeUriPath path);
+    Task<IWebEntity> ScrapPath(RelativeUriPath path);
 }

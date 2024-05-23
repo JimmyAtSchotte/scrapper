@@ -12,7 +12,7 @@ public class FileResultTests
         var uri = new Uri("https://localhost/fonts/fontawesome-webfont.eot?v=3.2.1");
         var bytes = Array.Empty<byte>();
 
-        var file = CssScrapResult.Create(bytes, uri);
+        var file = CssWebEntity.Create(bytes, uri);
         
         file.GetFileName().Should().Be("fonts/fontawesome-webfont.eot");
     }
