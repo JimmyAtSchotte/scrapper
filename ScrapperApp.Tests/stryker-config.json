@@ -46,7 +46,8 @@
       "*LogError*",
       "*LogInformation*",
       "*LogTrace*",
-      "*LogWarning*"
+      "*LogWarning*",
+      "*Exception.ctor"
     ]
   }
 }

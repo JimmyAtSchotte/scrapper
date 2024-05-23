@@ -42,16 +42,17 @@ public class WebScraper : IWebScraper
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
+            
+            return Maybe<IWebEntity>.WithoutValue();
         }
-        
-        return Maybe<IWebEntity>.WithoutValue();
     }
 }
 
 public class WebScraperException : Exception
 {
-    public WebScraperException(Uri uri, HttpStatusCode code, string content) : base(
-    $"[{code}] {uri.AbsoluteUri} ({content})")
+    
+    public WebScraperException(Uri uri, HttpStatusCode code, string content) 
+        : base($"[{code}] {uri.AbsoluteUri} ({content})")
     {
         
     }
