@@ -1,7 +1,12 @@
+using System.Net;
 using System.Text;
 using ArrangeDependencies.Autofac;
+using ArrangeDependencies.Autofac.Extensions;
 using ArrangeDependencies.Autofac.HttpClient;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using Moq.Protected;
 using ScrapperApp.Scraper;
 using ScrapperApp.SharedKernel;
 
@@ -24,7 +29,8 @@ public class WebScraperTests
         var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
-        Encoding.UTF8.GetString(scrapResult.GetContent()).Should().Be(html);
+        scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
+        Encoding.UTF8.GetString(webEntity.GetContent()).Should().Be(html);
     }
     
     [Test]
@@ -42,7 +48,8 @@ public class WebScraperTests
         var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
-        scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA.html");
+        scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
+        webEntity.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA.html");
     }
     
     [Test]
@@ -60,7 +67,8 @@ public class WebScraperTests
         var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
         
-        scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA");
+        scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
+        webEntity.GetLinkedFiles().Should().Contain(x => x.ToString() == "pageA");
     }
     
     [Test]
@@ -78,7 +86,8 @@ public class WebScraperTests
         var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath("pageA"));
 
-        scrapResult.GetLinkedFiles().Should().Contain(x => x.ToString() =="");
+        scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
+        webEntity.GetLinkedFiles().Should().Contain(x => x.ToString() =="");
     }
     
     [Test]
@@ -96,7 +105,8 @@ public class WebScraperTests
         var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
-        scrapResult.GetLinkedFiles().Should().HaveCount(0);
+        scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
+        webEntity.GetLinkedFiles().Should().HaveCount(0);
     }
     
     [Test]
@@ -114,7 +124,8 @@ public class WebScraperTests
         var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
-        scrapResult.GetLinkedFiles().Should().HaveCount(1);
+        scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
+        webEntity.GetLinkedFiles().Should().HaveCount(1);
     }
     
     
@@ -133,6 +144,61 @@ public class WebScraperTests
         var scrapper = arrange.Resolve<IWebScraper>();
         var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
 
-        scrapResult.GetLinkedFiles().Should().HaveCount(5);
+        scrapResult.TryGetValue(out var webEntity).Should().BeTrue();
+        webEntity.GetLinkedFiles().Should().HaveCount(5);
+    }
+
+    [Test]
+    public async Task ConnectionFailure()
+    {
+        var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+        httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+            "SendAsync",
+            ItExpr.IsAny<HttpRequestMessage>(),
+            ItExpr.IsAny<CancellationToken>()
+            )
+            .ThrowsAsync(new HttpRequestException("Connection failure"));
+        
+        var httpClient = new HttpClient(httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri("http://localhost/");
+        
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
+        {
+            dependencies.UseMock<IHttpClientFactory>(mock => mock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient));
+        });
+        
+        var scrapper = arrange.Resolve<IWebScraper>();
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
+
+        scrapResult.TryGetValue(out _).Should().BeFalse();
+    }
+    
+    [Test]
+    public async Task ErrorHttpStatusCode()
+    {
+        var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+        httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+            "SendAsync",
+            ItExpr.IsAny<HttpRequestMessage>(),
+            ItExpr.IsAny<CancellationToken>()
+            )
+            .ThrowsAsync(new HttpRequestException("Connection failure"));
+        
+        var httpClient = new HttpClient(httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri("http://localhost/");
+        
+        var arrange = Arrange.Dependencies<IWebScraper, WebScraper>(dependencies =>
+        {
+            dependencies.UseHttpClientFactory(client => client.BaseAddress = new Uri("http://localhost/"), 
+            HttpClientConfig.Create(new Uri("http://localhost/"), "", HttpStatusCode.Unauthorized)
+            );
+        });
+        
+        var scrapper = arrange.Resolve<IWebScraper>();
+        var scrapResult = await scrapper.ScrapPath(new RelativeUriPath(""));
+
+        scrapResult.TryGetValue(out _).Should().BeFalse();
     }
 }

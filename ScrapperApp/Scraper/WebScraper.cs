@@ -14,23 +14,33 @@ public class WebScraper : IWebScraper
         _httpClient = httpClientFactory.CreateClient();
     }
     
-    public async Task<IWebEntity> ScrapPath(RelativeUriPath path)
+    public async Task<Maybe<IWebEntity>> ScrapPath(RelativeUriPath path)
     {
-        var uri = path.CreateRelativeUri(_httpClient.BaseAddress);
+        try
+        {
+            var uri = path.CreateRelativeUri(_httpClient.BaseAddress);
         
-        _logger.LogTrace("Begin request {Uri}", uri);
+            _logger.LogTrace("Begin request {Uri}", uri);
         
-        var response = await _httpClient.GetAsync(uri.AbsolutePath);
-        var content = await response.Content.ReadAsByteArrayAsync();
+            var response = await _httpClient.GetAsync(uri.AbsolutePath);
+            _logger.LogTrace("Complete request {Uri}, status: {HttpStatus}", uri, response.StatusCode);
+
+            response.EnsureSuccessStatusCode();
+            
+            var content = await response.Content.ReadAsByteArrayAsync();
+            
+            return response.Content.Headers.ContentType?.MediaType switch
+            {
+                "text/html" => Maybe<IWebEntity>.WithValue(HtmlWebEntity.Create(content, uri)),
+                "text/css" => Maybe<IWebEntity>.WithValue(CssWebEntity.Create(content, uri)),
+                _ => Maybe<IWebEntity>.WithValue(FileWebEntity.Create(content, uri))
+            };
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+        }
         
-        _logger.LogTrace("Complete request {Uri}, status: {HttpStatus}", uri, response.StatusCode);
-        
-        if (response.Content.Headers.ContentType?.MediaType == "text/html")
-            return HtmlWebEntity.Create(content, uri);
-        
-        if(response.Content.Headers.ContentType?.MediaType == "text/css")
-            return CssWebEntity.Create(content, uri);
-        
-        return FileWebEntity.Create(content, uri);
+        return Maybe<IWebEntity>.WithoutValue();
     }
 }

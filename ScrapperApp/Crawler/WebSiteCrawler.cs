@@ -40,9 +40,12 @@ public class WebSiteCrawler : IWebSiteCrawler
     
             foreach (var scrapResult in scrapped)
             {
-                await _webSiteStore.Save(scrapResult.GetFileName(), scrapResult.GetContent());
+                if(!scrapResult.TryGetValue(out var webEntity))
+                    continue;
                 
-                foreach (var link in scrapResult.GetLinkedFiles())
+                await _webSiteStore.Save(webEntity.GetFileName(), webEntity.GetContent());
+                
+                foreach (var link in webEntity.GetLinkedFiles())
                     crawlingQueue.Enqueue(link);
             }
         }
